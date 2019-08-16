@@ -20,4 +20,8 @@ func NewConfig() (*Config, error) {
 	return &Config{Env: provider}, nil
 }
 
+func (c *Config) Get(key string) string {
+	return c.Env.Get(key).String()
+}
+
 var configfx = fx.Provide(NewConfig)

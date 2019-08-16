@@ -12,7 +12,7 @@ type Logger struct {
 }
 
 func NewLogger(c *Config) (*Logger, error) {
-	if c.Yaml.Get("APP_ENV").String() == "production" {
+	if c.Get("APP_ENV") == "production" {
 		l, err := zap.NewProduction()
 		if err != nil {
 			return nil, err

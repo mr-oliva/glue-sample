@@ -20,7 +20,7 @@ func NewRouter(userHandler *handlers.User) *http.ServeMux {
 }
 
 func StartServer(mux *http.ServeMux, c *di.Config) error {
-	if err := http.ListenAndServe(":"+c.Env.Get("PORT").String(), mux); err != nil {
+	if err := http.ListenAndServe(":"+c.Get("PORT"), mux); err != nil {
 		return err
 	}
 	return nil
