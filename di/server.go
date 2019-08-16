@@ -1,23 +1,13 @@
 package di
 
-import (
-	"net/http"
-	"os"
-
-	"go.uber.org/zap"
-)
+import "go.uber.org/fx"
 
 type Server struct {
-	Logger *zap.Logger
+	Logger *Logger
 }
 
-func NewServer(logger *zap.Logger) *Server {
+func NewServer(logger *Logger) *Server {
 	return &Server{Logger: logger}
 }
 
-func StartServer(mux *http.ServeMux) error {
-	if err := http.ListenAndServe(":"+os.Getenv("PORT"), mux); err != nil {
-		return err
-	}
-	return nil
-}
+var serverfx = fx.Provide(NewServer)

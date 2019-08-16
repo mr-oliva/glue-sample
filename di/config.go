@@ -3,23 +3,21 @@ package di
 import (
 	"os"
 
+	"go.uber.org/config"
 	"go.uber.org/fx"
 )
 
 type Config struct {
-	Env string
+	Env *config.YAML
 }
 
-func NewConfig() *Config {
-	if os.Getenv("APP_ENV") == "" {
-		return &Config{Env: "development"}
+func NewConfig() (*Config, error) {
+	file, err := os.Open(".env")
+	if err != nil {
+		return nil, err
 	}
-	return &Config{Env: os.Getenv("APP_ENV")}
+	provider, err := config.NewYAML(config.Source(file))
+	return &Config{Env: provider}, nil
 }
 
-func apply(*fx.App) *Config {
-	if os.Getenv("APP_ENV") == "" {
-		return &Config{Env: "development"}
-	}
-	return &Config{Env: os.Getenv("APP_ENV")}
-}
+var configfx = fx.Provide(NewConfig)
