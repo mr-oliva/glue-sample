@@ -7,15 +7,17 @@ import (
 
 	"github.com/bookun/glue-sample/di"
 	"github.com/bookun/glue-sample/services/serviceA/controllers"
+	"github.com/bookun/glue-sample/services/serviceA/gateways"
 	"github.com/bookun/glue-sample/services/serviceA/handlers"
 	"github.com/bookun/glue-sample/services/serviceA/repositories"
 	"go.uber.org/fx"
 )
 
-func NewRouter(userHandler *handlers.User) *http.ServeMux {
+func NewRouter(userHandler *handlers.User, ipHandler *handlers.IP) *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/users", userHandler.HandleTaskGetUsers)
 	mux.HandleFunc("/user/", userHandler.HandleTaskGetUserNameById)
+	mux.HandleFunc("/ip", ipHandler.HandleTaskGetMyGIP)
 	return mux
 }
 
@@ -34,8 +36,11 @@ func main() {
 				return "testdata/user.csv"
 			},
 			repositories.NewFile,
+			gateways.NewGIPGateway,
 			controllers.NewUser,
+			controllers.NewIPGateway,
 			handlers.NewUser,
+			handlers.NewIP,
 			NewRouter,
 		),
 		fx.Invoke(StartServer),
