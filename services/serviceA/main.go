@@ -4,6 +4,8 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
 
 	"github.com/bookun/glue-sample/di"
 	"github.com/bookun/glue-sample/services/serviceA/controllers"
@@ -13,19 +15,10 @@ import (
 	"go.uber.org/fx"
 )
 
-func NewRouter(userHandler *handlers.User, ipHandler *handlers.IP) *http.ServeMux {
-	mux := http.NewServeMux()
+func Register(mux *http.ServeMux, userHandler *handlers.User, ipHandler *handlers.IP) {
 	mux.HandleFunc("/users", userHandler.HandleTaskGetUsers)
 	mux.HandleFunc("/user/", userHandler.HandleTaskGetUserNameById)
 	mux.HandleFunc("/ip", ipHandler.HandleTaskGetMyGIP)
-	return mux
-}
-
-func StartServer(mux *http.ServeMux, c *di.Config) error {
-	if err := http.ListenAndServe(":"+c.Get("PORT"), mux); err != nil {
-		return err
-	}
-	return nil
 }
 
 func main() {
@@ -41,12 +34,20 @@ func main() {
 			controllers.NewIPGateway,
 			handlers.NewUser,
 			handlers.NewIP,
-			NewRouter,
 		),
-		fx.Invoke(StartServer),
+		fx.Invoke(Register),
 	)
 	ctx := context.Background()
 	if err := app.Start(ctx); err != nil {
-		log.Fatal(ctx)
+		log.Fatal(err)
+	}
+
+	quit := make(chan os.Signal)
+	signal.Notify(quit, os.Interrupt)
+
+	<-quit
+
+	if err := app.Stop(ctx); err != nil {
+		log.Fatal(err)
 	}
 }

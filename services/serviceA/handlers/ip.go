@@ -10,18 +10,18 @@ import (
 
 type IP struct {
 	controller *controllers.IPGateway
-	server     *di.Server
+	logger     *di.Logger
 }
 
-func NewIP(i *controllers.IPGateway, s *di.Server) *IP {
-	return &IP{controller: i, server: s}
+func NewIP(i *controllers.IPGateway, s *di.Logger) *IP {
+	return &IP{controller: i, logger: s}
 }
 
 func (i *IP) HandleTaskGetMyGIP(w http.ResponseWriter, r *http.Request) {
 	ip, err := i.controller.GetMYGIP()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		i.server.Logger.Errorf("can't get my GIP: %v", err.Error())
+		i.logger.Errorf("can't get my GIP: %v", err.Error())
 		return
 	}
 	fmt.Fprintf(w, ip)

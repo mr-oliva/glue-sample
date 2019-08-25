@@ -1,13 +1,33 @@
 package di
 
-import "go.uber.org/fx"
+import (
+	"context"
+	"net/http"
+	"os"
 
-type Server struct {
-	Logger *Logger
+	"go.uber.org/fx"
+)
+
+func NewMux(lc fx.Lifecycle, logger *Logger) *http.ServeMux {
+	logger.Printf("Executing NewMux.")
+	mux := http.NewServeMux()
+	server := &http.Server{
+		Addr:    ":" + os.Getenv("PORT"),
+		Handler: mux,
+	}
+	lc.Append(fx.Hook{
+		OnStart: func(context.Context) error {
+			logger.Printf("Starting HTTP server.")
+			go server.ListenAndServe()
+			return nil
+		},
+		OnStop: func(ctx context.Context) error {
+			logger.Printf("Stopping HTTP server.")
+			return server.Shutdown(ctx)
+		},
+	})
+
+	return mux
 }
 
-func NewServer(logger *Logger) *Server {
-	return &Server{Logger: logger}
-}
-
-var serverfx = fx.Provide(NewServer)
+var serverfx = fx.Provide(NewMux)
