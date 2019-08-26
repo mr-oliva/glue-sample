@@ -9,6 +9,14 @@
 
 を考慮したサンプルとなっている
 
+## 実行方法
+
+```
+$ cd $GOPATH/github.com/bookun/glue-sample
+$ cd service/serviceA
+$ go run main.go
+```
+
 ## uber-go/fx
 `di` ディレクトリに logger, configについて記述.    
 fx.go には基本となるmodule群をまとめたものをExportしている
@@ -38,4 +46,3 @@ default) http://localhost:8080
 |/users| user一覧を表示|
 |/user/[1-2]| user1を表示 |
 |/ip|自身のグローバルIPを表示 |
-
