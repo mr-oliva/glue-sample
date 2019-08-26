@@ -17,8 +17,10 @@ $ cd service/serviceA
 $ go run main.go
 ```
 
-## uber-go/fx
-`di` ディレクトリに logger, configについて記述.    
+![image](https://raw.githubusercontent.com/bookun/glue-sample/master/services/serviceA/doc/images/execute.png)
+
+## uber-go/fxを用いたDI
+`di` ディレクトリに logger, configについて記述.
 fx.go には基本となるmodule群をまとめたものをExportしている
 
 ### config
